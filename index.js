@@ -4,4 +4,6 @@ var Word = require('./word');
 
 var test = new Word('horse');
 console.log(test);
-test.dispWord();
+test.wordDisp();
+test.guess('r');
+console.log(test);
