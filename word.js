@@ -14,7 +14,7 @@ function Word(word) {
     this.letters.forEach(function(letter) {
       letter.guessCheck(guess);
     });
-    this.wordDisp();
+    // this.wordDisp();
   }
 };
 
