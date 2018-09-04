@@ -1,6 +1,5 @@
 var inquirer = require('inquirer');
 var Word = require('./word');
-
 var wins = 0;
 var losses = 0;
 var guessesLeft = 10;
@@ -8,19 +7,13 @@ var badGuesses = [];
 var wordList = ["monkey","scumm","banana","pirate","ghost","sword","grog","island","curse","guybrush","acetone","ship","sail","skeleton","skull","accounting","mansion","meat","fish","seagull","cannibal","voodoo","prisoner","voyage","sheriff","prosthetic","rubber","chicken"]
 var randomWord;
 var secretWord;
-
-// tests for basic functionality
-// var test = new Word('horse');
-// console.log(test);
-// test.wordDisp();
-// test.guess('r');
-// console.log(test);
+var wordIsComplete = false;
 
 function startGame() {
   guessesLeft = 10;
   badGuesses = [];
   // randomWord = wordList[Math.floor(Math.random() * wordList.length)];
-  randomWord = 'horse';
+  randomWord = wordList[Math.floor(Math.random() * wordList.length)];
 
   secretWord = new Word(randomWord);
   promptGuess();
@@ -42,8 +35,58 @@ function promptGuess() {
       guessesLeft--;
     };
     secretWord.guess(answers.guess);
+    endTurn();
+  });
+};
+
+function endTurn() {
+  wordIsComplete = true;
+  secretWord.letters.forEach(function(letter) {
+    if (!letter.isGuessed) {
+      wordIsComplete = false;
+    };
+  });
+  if (!wordIsComplete) {
     if (guessesLeft > 0) {
       promptGuess();
+    }
+    else {
+      loseGame();
+    };
+  }
+  else {
+    winGame();
+  };
+};
+
+function winGame() {
+  wins++;
+  console.log('You win!\nwins: ' + wins + '\nlosses: ' + losses);
+  inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'restartYN',
+      message: 'Would you like to play again?'
+    }
+  ]).then(function(answer) {
+    if(answer.restartYN) {
+      startGame();
+    };
+  });
+};
+
+function loseGame() {
+  losses++
+  console.log('You lose!\nwins: ' + wins + '\nlosses: ' + losses);
+  inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'restartYN',
+      message: 'Would you like to play again?'
+    }
+  ]).then(function(answer) {
+    if(answer.restartYN) {
+      startGame();
     };
   });
 };
@@ -53,9 +96,5 @@ startGame();
 
 // NOTES
 // ----------------
-// where to check if guess was correct, then update guessesLeft and badGuesses
-// return to promptGuess each time
-// check if whole word has been guessed, then update wins and restart
-// check if guessesLeft = 0, then update losses and restart
 // don't allow duplicate letters
-// end game if all letters guessed
+// display full word once they win or lose
